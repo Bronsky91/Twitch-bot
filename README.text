@@ -1,0 +1,26 @@
+TWITCH CASTER BOT
+-----------------
+Twitch chat bot that is used while casting Overwatch games. Gathers votes from viewers voting on the favored player that will most likely get Play of the game, and votes for which team is favored to win. To be used in conjuction with an html overlay that calls the bot's api for current data. At the end of the game the data will be used to see which viewer voted correctly the earliest for the correct Play of the game.
+-----------------
+Sinatra API
+NoSQL MongoDB
+Mongoid ORM
+
+1) Creates Game_ID for bot instance, used for all DB records during instance (game_id = current game)
+2) Gathers unique Play of the game votes from viewers
+	id
+	game_id
+	username
+	vote
+	timestamp
+3) Gathers unique Team favor votes from viewers
+	id
+	game_id
+	username
+	vote
+4) Presents functionality to chat in intervals
+5) Announces restarting for new game (which gives new game_id)
+
+API Calls require game_id for current game
+	# /api/v1/teamvotes/{game_id}
+	# /api/v1/playofthegame/{game_id}

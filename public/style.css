@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css?family=Shrikhand');
+
+body {
+    background-color: #b4afbc;
+    font-family: 'Shrikhand', cursive;
+}
+#container {
+    display:flex;
+    justify-content: space-evenly;
+}
+
+.btn {
+    height: 4em;
+    width: 10em;
+    margin: 1em;
+    font-family: 'Shrikhand', cursive;
+}
+.btn:hover{
+    cursor: pointer;
+}
+#run {
+    background-color: lightgreen; 
+}
+#kill {
+    background-color: lightcoral; 
+}
+#blue {
+    color: blue;
+}
+#red {
+    color: red;
+}
+.box{
+    width: 100%;
+    clear: both;
+    margin:.5em;
+}

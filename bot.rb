@@ -35,17 +35,17 @@ class TwitchBot
     def new_game
         @game_id = Time.now.to_i
         GameId.create(game_id:@game_id, game_started:true)
-        write_to_chat "The Game has started! Vote for the team you think will win anytime by using the \"!team\" command then the team's name!"
+        write_to_chat "Vote for the team you think will win anytime by using the \"!team \" command followed by the team's name!"
     end
 
     def end_game
         game = GameId.last
         game.update_attributes(game_id:game.game_id, game_started:false)
-        write_to_chat "The Game has ended, thanks for voting!"
+        write_to_chat "Voting has stopped until next game"
     end
 
     def run
-        write_to_chat "Caster_Bot Online"
+        write_to_chat "Caster_Bot is listening"
         until @socket.eof? do
             message = @socket.gets
             game = GameId.last
@@ -65,6 +65,7 @@ class TwitchBot
 
                 if game.game_started
                     @game_id = game.game_id
+                    # ! Commands
                     if content.start_with? '!potg '
                         vote = content.split(' ')
                         vote.shift
@@ -86,6 +87,8 @@ class TwitchBot
                         else
                             TeamVote.create(game_id: @game_id, username: username, vote: vote)
                         end
+                    elsif content.start_with? '!teams'
+                        write_to_chat "On the Blue Team we have #{game.blue_team} and on the Red Team we have #{game.red_team}!"
                     end
                 end
             end

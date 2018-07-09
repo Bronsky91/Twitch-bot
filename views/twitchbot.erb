@@ -1,24 +1,30 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
+<h1 class='title'>Caster_Bot</h1>
 <div id='container'>
     <div id='bot'>
-        <h1>Caster_Bot</h1>
+    <h1>Controller</h1>
         <form method="post" action="/bot" id='botForm'>
             <input class='btn' id='run' type='submit' value='Run' name='run'><br>
-            <input class='btn' id='kill' type='submit' value='Kill' name='kill'><br>
+            <input class='btn' id='end_game' type='submit' value='End Game' name='end_game'><br>
+            <input class='btn' id='quit' type='submit' value='Quit' name='quit'><br>
         </form>
     </div>
-    <div id='match'>
-        <h1>Set Match</h1>
-        <form method="post" action="/setmatch" id='matchForm'>
-            <span id='blue'>Blue Team:</span> <input class='box' type="text" name="blue_team"><br>
-            <span id='red'>Red Team:</span> <input class='box' type="text" name="red_team"><br>
-            <input class='btn' type="submit" value="Submit">
-        </form>
-
-        <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
-        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
-        <script src="js/index.js"></script>
-    </div>
+    <% if @game.game_started %>
+      <div id='vs'>
+            <h3 class='blue team'><%= @game.blue_team %></h3>
+            <h2>VS</h2>
+            <h3 class='red team'><%= @game.red_team%></h3>
+        </div>
+    <% else%>
+      <div id='match'>
+            <h1>Set Match</h1>
+            <form method="post" action="/bot" id='matchForm'>
+                <span class='blue'>Blue Team:</span> <input class='box' type="text" name="blue_team"><br>
+                <span class='red'>Red Team:</span> <input class='box' type="text" name="red_team"><br>
+                <input class='btn' type="submit" value="New Game" name="new_game">
+            </form>
+        </div>
+    <% end %>
 </div>

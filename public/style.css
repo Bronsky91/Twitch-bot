@@ -1,8 +1,16 @@
 @import url('https://fonts.googleapis.com/css?family=Shrikhand');
 
 body {
-    background-color: #b4afbc;
+    background-image: url('/mercy.png');
     font-family: 'Shrikhand', cursive;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.title {
+    font-size: 3em;
+    margin: 0 auto 1em;
+    width: 50%;
+    text-align: center;
 }
 #container {
     display:flex;
@@ -21,17 +29,25 @@ body {
 #run {
     background-color: lightgreen; 
 }
-#kill {
+#quit {
     background-color: lightcoral; 
 }
-#blue {
+.blue {
     color: blue;
 }
-#red {
+.red {
     color: red;
 }
 .box{
     width: 100%;
     clear: both;
     margin:.5em;
+}
+#vs {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.team {
+    font-size: 2em;
 }

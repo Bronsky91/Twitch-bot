@@ -4,7 +4,6 @@ require 'sinatra/namespace'
 require 'sinatra/cross_origin'
 require './bot'
 
-
 # DB Setup
 Mongoid.load! "mongoid.config"
 
@@ -15,6 +14,7 @@ class GameId
     field :game_id, type: Integer
     field :blue_team, type: String
     field :red_team, type: String
+    field :game_started, type: Boolean, default: false
 
     validates :game_id, presence: true
 
@@ -62,7 +62,8 @@ class GameIdSerializer
         id:@game_id.id.to_s,
         game_id:@game_id.game_id,
         blue_team:@game_id.blue_team,
-        red_team:@game_id.red_team
+        red_team:@game_id.red_team,
+        game_started:@game_id.game_started
       }
       data[:errors] = @game_id.errors if@game_id.errors.any?
         data
@@ -115,11 +116,12 @@ before do
 end
 
 get '/' do
+    @game = GameId.last
+    if @game == nil
+        GameId.create(game_id:0,game_started:false)
+        @game = GameId.last
+    end
     erb :twitchbot
-end
-
-get '/status' do
-    erb :status
 end
 
 post '/setmatch' do 
@@ -133,13 +135,21 @@ end
 
 post '/bot' do
     # Creates Bot
-    bot = TwitchBot.new
+    @bot = TwitchBot.new
     trap("INT") {bot.quit}
 
     if params[:run]
-        bot.run
-    elsif params[:kill]
-        bot.quit
+        @bot.run
+    elsif params[:quit]
+        @bot.quit
+    elsif params[:new_game]
+        @bot.new_game
+        game = GameId.last
+        game.update_attributes(
+            blue_team: params[:blue_team].delete(' ').upcase(),
+            red_team: params[:red_team].delete(' ').upcase())
+    elsif params[:end_game]
+        @bot.end_game
     end
     redirect '/'
 end
@@ -149,7 +159,8 @@ namespace '/api/v1' do
     before do
         content_type 'application/json'
     end
-
+    
+    # /api/v1/gameid
     get '/gameid' do
         game_id = GameId.last
         GameIdSerializer.new(game_id).to_json
@@ -169,5 +180,4 @@ namespace '/api/v1' do
         potgvotes.map { |potg_vote| PotgVoteSerializer.new(potg_vote) }.to_json
     end
    
-
 end

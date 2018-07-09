@@ -32,15 +32,23 @@ class TwitchBot
         write_to_system "PRIVMSG ##{@channel} :#{message}"
     end
 
+    def new_game
+        @game_id = Time.now.to_i
+        GameId.create(game_id:@game_id, game_started:true)
+        write_to_chat "The Game has started! Vote for the team you think will win anytime by using the \"!team\" command then the team's name!"
+    end
+
+    def end_game
+        game = GameId.last
+        game.update_attributes(game_id:game.game_id, game_started:false)
+        write_to_chat "The Game has ended, thanks for voting!"
+    end
 
     def run
-        @game_id = Time.now.to_i
-        GameId.create(game_id:@game_id)
         write_to_chat "Caster_Bot Online"
-        potg_arr = []
-        
         until @socket.eof? do
             message = @socket.gets
+            game = GameId.last
 
             if message.match(/^PING :(.*)$/)
                 write_to_system "PONG #{$~[1]}"
@@ -51,29 +59,35 @@ class TwitchBot
                 content = $~[1]
                 username = message.match(/@(.*).tmi.twitch.tv/)[1]
 
-                if content.start_with? '!potg '
-                    vote = content.split(' ')
-                    vote.shift
-                    vote = vote.join('').upcase
-                    timestamp = Time.now.to_i
-                    current_vote = PotgVote.where(game_id: @game_id, username: username).first
-                    if current_vote
-                        current_vote.update_attributes(game_id: @game_id, username: username, vote: vote, timestamp: timestamp)
-                    else
-                        PotgVote.create(game_id: @game_id, username: username, vote: vote, timestamp: timestamp)
-                    end
-                elsif content.start_with? '!team '
-                    vote = content.split(' ')
-                    vote.shift
-                    vote = vote.join('').upcase
-                    current_vote = TeamVote.where(game_id: @game_id, username: username).first
-                    if current_vote
-                        current_vote.update_attributes(game_id: @game_id, username: username, vote: vote)
-                    else
-                        TeamVote.create(game_id: @game_id, username: username, vote: vote)
+                if content.include? 'clean' or content.include? 'house'
+                    write_to_chat 'Did someone say a CLEAN HOUSE!?!'
+                end
+
+                if game.game_started
+                    @game_id = game.game_id
+                    if content.start_with? '!potg '
+                        vote = content.split(' ')
+                        vote.shift
+                        vote = vote.join('').upcase
+                        timestamp = Time.now.to_i
+                        current_vote = PotgVote.where(game_id: @game_id, username: username).first
+                        if current_vote
+                            current_vote.update_attributes(game_id: @game_id, username: username, vote: vote, timestamp: timestamp)
+                        else
+                            PotgVote.create(game_id: @game_id, username: username, vote: vote, timestamp: timestamp)
+                        end
+                    elsif content.start_with? '!team '
+                        vote = content.split(' ')
+                        vote.shift
+                        vote = vote.join('').upcase
+                        current_vote = TeamVote.where(game_id: @game_id, username: username).first
+                        if current_vote
+                            current_vote.update_attributes(game_id: @game_id, username: username, vote: vote)
+                        else
+                            TeamVote.create(game_id: @game_id, username: username, vote: vote)
+                        end
                     end
                 end
-                
             end
         end
     end

@@ -118,47 +118,6 @@ before do
     response.headers['Access-Control-Allow-Origin'] = '*'
 end
 
-get '/' do
-    @game = GameId.last
-    if @game == nil
-        GameId.create(game_id:0,game_started:false)
-        @game = GameId.last
-    end
-    erb :twitchbot
-end
-
-post '/setmatch' do 
-    game = GameId.last
-    game.update_attributes(
-        blue_team: params[:blue_team].delete(' ').upcase(),
-        red_team: params[:red_team].delete(' ').upcase()
-    )
-    redirect '/'
-end
-
-post '/load' do
-    # Creates Bot
-    
-end
-
-post '/bot' do
-    bot = TwitchBot.new
-    if params[:run]
-        bot.run
-    elsif params[:quit]
-        bot.quit
-    elsif params[:new_game]
-        bot.new_game
-        game = GameId.last
-        game.update_attributes(
-            blue_team: params[:blue_team].delete(' ').upcase(),
-            red_team: params[:red_team].delete(' ').upcase())
-    elsif params[:end_game]
-        bot.end_game
-    end
-    redirect '/'
-end
-
 namespace '/api/v1' do
 
     before do

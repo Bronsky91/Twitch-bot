@@ -3,6 +3,9 @@ require 'mongoid'
 require 'sinatra/namespace'
 require 'sinatra/cross_origin'
 require './bot'
+require "rubygems"
+require "sinatra/base"
+
 
 # DB Setup
 Mongoid.load! "mongoid.config"
@@ -33,7 +36,6 @@ class PotgVote
     validates :username, presence: true
     validates :vote, presence: true
     validates :timestamp, presence: true
-
 end
 
 class TeamVote
@@ -54,18 +56,18 @@ end
 # Serializers
 class GameIdSerializer
     def initialize(game_id)
-      @game_id = game_id
+    @game_id = game_id
     end
-  
+
     def as_json(*)
-      data = {
+    data = {
         id:@game_id.id.to_s,
         game_id:@game_id.game_id,
         blue_team:@game_id.blue_team,
         red_team:@game_id.red_team,
         game_started:@game_id.game_started
-      }
-      data[:errors] = @game_id.errors if@game_id.errors.any?
+    }
+    data[:errors] = @game_id.errors if@game_id.errors.any?
         data
     end
 end
@@ -73,20 +75,20 @@ end
 
 class TeamVoteSerializer
     def initialize(team_vote)
-      @team_vote = team_vote
+    @team_vote = team_vote
     end
-  
+
     def as_json(*)
-      data = {
+    data = {
         id:@team_vote.id.to_s,
         game_id:@team_vote.game_id,
         username:@team_vote.username,
         vote:@team_vote.vote
-      }
-      data[:errors] = @team_vote.errors if@team_vote.errors.any?
-      data
+    }
+    data[:errors] = @team_vote.errors if@team_vote.errors.any?
+    data
     end
-  end
+end
 
 
 class PotgVoteSerializer
@@ -109,6 +111,7 @@ end
 
 configure do
     enable :cross_origin
+    enable :sessions
 end
 
 before do
@@ -133,23 +136,25 @@ post '/setmatch' do
     redirect '/'
 end
 
-post '/bot' do
+post '/load' do
     # Creates Bot
-    @bot = TwitchBot.new
-    trap("INT") {bot.quit}
+    
+end
 
+post '/bot' do
+    bot = TwitchBot.new
     if params[:run]
-        @bot.run
+        bot.run
     elsif params[:quit]
-        @bot.quit
+        bot.quit
     elsif params[:new_game]
-        @bot.new_game
+        bot.new_game
         game = GameId.last
         game.update_attributes(
             blue_team: params[:blue_team].delete(' ').upcase(),
             red_team: params[:red_team].delete(' ').upcase())
     elsif params[:end_game]
-        @bot.end_game
+        bot.end_game
     end
     redirect '/'
 end
@@ -173,11 +178,11 @@ namespace '/api/v1' do
         teamvotes.map { |team_vote| TeamVoteSerializer.new(team_vote) }.to_json
     end
 
-     # /api/v1/playofthegame/{game_id}
+    # /api/v1/playofthegame/{game_id}
     get '/playofthegame/:game_id' do |game_id|
         potgvotes = PotgVote.where(game_id: game_id)
 
         potgvotes.map { |potg_vote| PotgVoteSerializer.new(potg_vote) }.to_json
     end
-   
+
 end

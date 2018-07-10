@@ -5,6 +5,11 @@
 <div id='container'>
     <div id='bot'>
     <h1>Controller</h1>
+    <%=@fun%>
+    <form method="post" action="/load" id='botForm'>
+           <input class='btn' id='run' type='submit' value='Load'><br>
+        </form>
+    >
         <form method="post" action="/bot" id='botForm'>
             <input class='btn' id='run' type='submit' value='Run' name='run'><br>
             <input class='btn' id='end_game' type='submit' value='End Game' name='end_game'><br>

@@ -1,5 +1,6 @@
 require 'socket'
 require 'mongoid'
+require 'securerandom'
 require './server'
 
 # DB Setup
@@ -88,10 +89,11 @@ class TwitchBot
                             TeamVote.create(game_id: @game_id, username: username, vote: vote)
                         end
                     elsif content.start_with? '!teams'
-                        write_to_chat "On the Blue Team we have #{game.blue_team} and on the Red Team we have #{game.red_team}!"
+                        write_to_chat "On the Blue Team we have #{game.blue_team} and on the Red Team we have #{game.red_team}"
                     end
                 end
             end
+            sleep(0.5)
         end
     end
 

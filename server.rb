@@ -2,7 +2,6 @@ require 'sinatra'
 require 'mongoid'
 require 'sinatra/namespace'
 require 'sinatra/cross_origin'
-require './bot'
 require "rubygems"
 require "sinatra/base"
 

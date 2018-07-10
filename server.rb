@@ -122,6 +122,11 @@ namespace '/api/v1' do
     before do
         content_type 'application/json'
     end
+
+    # /api/v1/gameid
+    get '/startgame' do
+        game = GameId.create(game_id:0)
+    end
     
     # /api/v1/gameid
     get '/gameid' do

@@ -1,3 +1,3 @@
-require_relative './Twitch bot/server.rb'
+require 'server.rb'
 
 run server
